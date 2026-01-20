@@ -383,6 +383,17 @@ Linux builds automatically include `libstdc++` for Python native extensions (grp
 
 ---
 
+## TODO
+
+- [ ] **Troubleshooting section** — Common errors: "Unknown package", flakes not enabled, direnv not allowed
+- [ ] **`just tools` recipe** — Print bundle contents from CLI instead of reading README
+- [ ] **Versioning/releases** — Tag releases so users can pin: `nix flake init -t github:farra/cautomaton-develops/v1.0`
+- [ ] **Example deps.toml snippets** — Python project, Node project, Rust project examples
+- [ ] **FAQ: "How do I exclude a bundle tool?"** — Answer: don't use bundles, list tools explicitly
+- [ ] **Template updates** — How do existing users get improvements to flake.nix?
+
+---
+
 ## License
 
 Apache 2
