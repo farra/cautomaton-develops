@@ -1,0 +1,13 @@
+# deps.toml
+# Project tool dependencies
+
+# Include pre-defined tool bundles:
+#   "baseline" - Standalone modern CLI tools (28 tools, no Python/Perl)
+#   "complete" - Comprehensive dev environment (58 tools)
+[bundles]
+include = ["baseline"]
+
+# Project-specific tools (in addition to bundles)
+[tools]
+python = "3.11"
+nodejs = "20"
