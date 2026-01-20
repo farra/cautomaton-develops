@@ -1,12 +1,78 @@
 #!/usr/bin/env bash
 #
 # Initialize a project with cautomaton-develops template
+#
 # Usage: curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash
+#        ./init.sh [options] [target-dir]
+#
+# Options:
+#   -f, --force    Bypass safety checks (skip confirmation prompts)
+#   -h, --help     Show this help message
+#
+# Example:
+#   curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash
+#   ./init.sh ~/dev/myproject
+#   ./init.sh -f .
 #
 
 set -euo pipefail
 
 REPO_URL="https://raw.githubusercontent.com/farra/cautomaton-develops/main/template"
+
+usage() {
+    if [[ -f "$0" ]]; then
+        sed '/^#/!q' "$0" | grep '^#[^!]' | cut -c3-
+    else
+        cat << 'EOF'
+Initialize a project with cautomaton-develops template
+
+Usage: curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash
+       ./init.sh [options] [target-dir]
+
+Options:
+  -f, --force    Bypass safety checks (skip confirmation prompts)
+  -h, --help     Show this help message
+
+Example:
+  curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash
+  ./init.sh ~/dev/myproject
+  ./init.sh -f .
+EOF
+    fi
+    exit "${1:-1}"
+}
+
+FORCE=false
+TARGET="."
+
+# Process arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            usage 0
+            ;;
+        -f|--force)
+            FORCE=true
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -*)
+            echo "Unknown option: $1" >&2
+            usage 1
+            ;;
+        *)
+            TARGET="$1"
+            shift
+            ;;
+    esac
+done
+
+# Resolve target to absolute path (create if needed)
+mkdir -p "$TARGET"
+TARGET="$(cd "$TARGET" && pwd)"
 
 # Colors (if terminal supports them)
 if [[ -t 1 ]]; then
@@ -106,6 +172,46 @@ main() {
   echo "============================"
   echo ""
 
+  # Show what we're about to do
+  info "Target directory: $TARGET"
+  echo ""
+  echo "This will create/update the following files:"
+  echo "  - flake.nix      (Nix flake definition)"
+  echo "  - deps.toml      (Tool dependencies)"
+  echo "  - justfile       (Developer commands)"
+  echo "  - .envrc         (direnv configuration)"
+  echo "  - .gitignore     (merge new entries)"
+  echo "  - AGENTS.md      (append if exists)"
+  echo ""
+
+  # Check for existing flake.nix (strong indicator of conflict)
+  if [[ -f "$TARGET/flake.nix" ]]; then
+    if ! $FORCE; then
+      warn "flake.nix already exists in target directory"
+      echo ""
+      read -p "    Overwriting may break your existing Nix setup. Continue? [y/N] " -n 1 -r
+      echo
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Initialization cancelled."
+        exit 1
+      fi
+      echo ""
+    fi
+  # Check if target has other files (general warning)
+  elif ! $FORCE && [ -n "$(ls -A "$TARGET" 2>/dev/null)" ]; then
+    info "Target directory is not empty"
+    read -p "    Continue with initialization? [y/N] " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      echo "Initialization cancelled."
+      exit 1
+    fi
+    echo ""
+  fi
+
+  # Change to target directory for all operations
+  cd "$TARGET"
+
   # Core files (skip if exist)
   download_file "flake.nix"
   download_file "deps.toml"
@@ -124,4 +230,4 @@ main() {
   echo ""
 }
 
-main "$@"
+main

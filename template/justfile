@@ -17,6 +17,33 @@ update:
 check:
     nix flake check
 
+# Upgrade flake.nix to latest template version
+upgrade:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    url="https://raw.githubusercontent.com/farra/cautomaton-develops/main/template/flake.nix"
+    tmp=$(mktemp)
+    curl -sL "$url" -o "$tmp"
+    if diff -q flake.nix "$tmp" > /dev/null 2>&1; then
+        echo "flake.nix is already up to date"
+        rm "$tmp"
+        exit 0
+    fi
+    echo "Changes available:"
+    echo "=================="
+    diff --color=auto -u flake.nix "$tmp" || true
+    echo ""
+    read -p "Apply update? [y/N] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        mv "$tmp" flake.nix
+        echo "Updated flake.nix"
+        echo "Run 'nix flake update' to rebuild with new template"
+    else
+        rm "$tmp"
+        echo "Cancelled"
+    fi
+
 # --- Project-specific recipes below ---
 
 # build:

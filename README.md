@@ -48,13 +48,24 @@ Clean, native to Nix. Copies template files to current directory.
 ### Option 2: init script (smart, handles existing projects)
 
 ```bash
+# Run in current directory
 curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash
+
+# Or specify a target directory
+curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash -s -- ~/dev/myproject
+
+# Force mode (skip confirmation prompts)
+curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash -s -- -f .
 ```
 
 The script will:
-- Skip files that already exist
+- Show what will be created before proceeding
+- Prompt for confirmation if directory has existing files
+- Skip files that already exist (won't overwrite)
 - Merge new entries into existing `.gitignore`
 - Append to existing `AGENTS.md` if present
+
+Options: `-f/--force` (skip prompts), `-h/--help` (show usage)
 
 ### After installation
 
@@ -77,6 +88,7 @@ That's it. All tools declared in `deps.toml` are now available.
 just              # List available commands
 just shell        # Enter dev shell (if not using direnv)
 just update       # Update nixpkgs pin (may bump tool versions)
+just upgrade      # Upgrade flake.nix to latest template (shows diff, asks to confirm)
 just check        # Validate flake
 ```
 
@@ -383,6 +395,22 @@ Linux builds automatically include `libstdc++` for Python native extensions (grp
 
 ---
 
+## Related Projects
+
+**[dev-agent-backlog](https://github.com/farra/dev-agent-backlog)** — Org-mode based task management for human-agent collaboration. Provides backlog tracking, design documents (RFC/RFD style), and Claude Code commands/skills.
+
+The two projects complement each other and can be overlaid on the same project:
+- **cautomaton-develops**: Reproducible dev environment (Nix, tools, dependencies)
+- **dev-agent-backlog**: Task/design management (backlog, design docs, agent workflows)
+
+```bash
+# Use both in the same project
+curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash
+bash <(curl -sL https://raw.githubusercontent.com/farra/dev-agent-backlog/main/bin/init.sh) MYPREFIX .
+```
+
+---
+
 ## TODO
 
 - [ ] **Troubleshooting section** — Common errors: "Unknown package", flakes not enabled, direnv not allowed
@@ -390,7 +418,6 @@ Linux builds automatically include `libstdc++` for Python native extensions (grp
 - [ ] **Versioning/releases** — Tag releases so users can pin: `nix flake init -t github:farra/cautomaton-develops/v1.0`
 - [ ] **Example deps.toml snippets** — Python project, Node project, Rust project examples
 - [ ] **FAQ: "How do I exclude a bundle tool?"** — Answer: don't use bundles, list tools explicitly
-- [ ] **Template updates** — How do existing users get improvements to flake.nix?
 
 ---
 
