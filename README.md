@@ -32,16 +32,35 @@ That said, this setup makes initializing your devcontainer extremely simple.
 
 ---
 
-## Quick Start
+## Installation
 
 **Prerequisites:** [Nix](https://nixos.org/download.html) with flakes enabled
 
-```bash
-# Clone or copy this template
-git clone https://github.com/farra/cautomaton-develops myproject
-cd myproject
+### Option 1: nix flake init (recommended)
 
-# Enter the development shell
+```bash
+cd myproject
+nix flake init -t github:farra/cautomaton-develops
+```
+
+Clean, native to Nix. Copies template files to current directory.
+
+### Option 2: init script (smart, handles existing projects)
+
+```bash
+curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash
+```
+
+The script will:
+- Skip files that already exist
+- Merge new entries into existing `.gitignore`
+- Append to existing `AGENTS.md` if present
+
+### After installation
+
+```bash
+# Edit deps.toml to add your dependencies
+# Then enter the development shell
 nix develop
 
 # Or use just
