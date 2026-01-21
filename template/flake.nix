@@ -3,9 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs }: let
+  outputs = { self, nixpkgs, rust-overlay }: let
     supportedSystems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
@@ -71,6 +73,35 @@
     # Tool Resolution
     # =========================================================================
 
+    # =========================================================================
+    # Rust Toolchain (via rust-overlay)
+    # =========================================================================
+    # Supports: "stable", "beta", "nightly", or specific versions like "1.75.0"
+    # Components configured via rust-components in deps.toml
+
+    getRustToolchain = pkgs: let
+      version = deps.tools.rust or null;
+      components = deps.rust-components or [ "rustfmt" "clippy" ];
+
+      # Parse version string to rust-bin path
+      toolchain =
+        if version == "stable" then pkgs.rust-bin.stable.latest.default
+        else if version == "beta" then pkgs.rust-bin.beta.latest.default
+        else if version == "nightly" then pkgs.rust-bin.nightly.latest.default
+        else if version != null then
+          # Specific version like "1.75.0"
+          pkgs.rust-bin.stable.${version}.default
+        else null;
+
+    in
+      if toolchain != null then
+        toolchain.override { extensions = components; }
+      else null;
+
+    # =========================================================================
+    # General Tool Resolution
+    # =========================================================================
+
     # Map "tool = version" to nixpkgs package
     mapTool = pkgs: name: version: let
 
@@ -92,10 +123,6 @@
           "1.22" = pkgs.go_1_22;
           "1.23" = pkgs.go_1_23;
         };
-        rust = {
-          "stable" = pkgs.rustup;
-          "*" = pkgs.rustup;
-        };
       };
 
       # Look up in version map, fall back to direct pkgs lookup
@@ -103,7 +130,9 @@
       fromPkgs = pkgs.${name} or null;
 
     in
-      if fromVersionMap != null then fromVersionMap
+      # Skip rust here - handled separately via getRustToolchain
+      if name == "rust" then null
+      else if fromVersionMap != null then fromVersionMap
       else if fromPkgs != null then fromPkgs
       else throw "Unknown package: ${name} (version: ${version})";
 
@@ -112,7 +141,10 @@
 
   in {
     devShells = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ rust-overlay.overlays.default ];
+      };
 
       # Get included bundles from deps.toml
       includedBundles = deps.bundles.include or [];
@@ -125,10 +157,16 @@
       # Resolve bundle tools to packages
       bundlePackages = map (resolveTool pkgs) bundleToolNames;
 
-      # Map explicit tools from deps.toml
-      explicitTools = builtins.attrValues (
-        builtins.mapAttrs (mapTool pkgs) (deps.tools or {})
+      # Map explicit tools from deps.toml (filters out nulls from rust)
+      explicitTools = builtins.filter (x: x != null) (
+        builtins.attrValues (
+          builtins.mapAttrs (mapTool pkgs) (deps.tools or {})
+        )
       );
+
+      # Rust toolchain (handled separately for components support)
+      rustToolchain = getRustToolchain pkgs;
+      rustPackages = if rustToolchain != null then [ rustToolchain ] else [];
 
       # Platform-specific: Linux needs libstdc++ for Python native extensions
       linuxDeps = pkgs.lib.optionals pkgs.stdenv.isLinux [
@@ -138,7 +176,7 @@
     in {
       default = pkgs.mkShell {
         # Explicit tools first so they take precedence in PATH
-        packages = explicitTools ++ bundlePackages ++ linuxDeps;
+        packages = explicitTools ++ rustPackages ++ bundlePackages ++ linuxDeps;
 
         # Linux: ensure native extensions can find libstdc++
         LD_LIBRARY_PATH = pkgs.lib.optionalString pkgs.stdenv.isLinux
@@ -146,6 +184,7 @@
 
         shellHook = ''
           echo "Dev environment loaded."
+          ${if rustToolchain != null then ''echo "Rust: $(rustc --version)"'' else ""}
           ${if includedBundles != [] then ''echo "Bundles: ${builtins.concatStringsSep ", " includedBundles}"'' else ""}
         '';
       };

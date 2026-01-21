@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Rust toolchain support via [rust-overlay](https://github.com/oxalica/rust-overlay)
+  - Supports channels: `stable`, `beta`, `nightly`
+  - Supports specific versions: `rust = "1.75.0"`
+  - Configurable components via `rust-components` (default: rustfmt, clippy)
+- Shell displays Rust version on entry when rust is configured
+
+### Changed
+
+- `flake.nix` now includes rust-overlay as an input
+- Updated deps.toml template with Rust examples
+- Updated README with Rust documentation
+
 ## [0.1.0] - 2026-01-20
 
 ### Added

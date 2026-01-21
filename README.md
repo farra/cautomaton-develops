@@ -103,9 +103,14 @@ Edit `deps.toml`:
 include = ["baseline"]    # Pre-built tool collections (optional)
 
 [tools]
-python = "3.11"           # Specific major.minor version
+rust = "stable"           # "stable", "beta", "nightly", or "1.75.0"
+python = "3.12"           # Nix provides interpreter; use uv for packages
 nodejs = "20"
-mytool = "*"              # Latest in nixpkgs
+uv = true                 # Fast Python package manager
+mytool = true             # Latest in nixpkgs
+
+# Rust components (default: rustfmt, clippy)
+rust-components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
 ```
 
 Then re-enter the shell: `exit` and `nix develop` (or `direnv reload` if using direnv).
@@ -304,7 +309,7 @@ When inside a `nix develop` shell, Nix sets `IN_NIX_SHELL=impure`. Prompt tools 
 
 1. **Only dependencies** — no shell hooks, no conditionals
 2. **Version = major.minor** — patch versions come from `flake.lock`
-3. **`"*"` means latest** — whatever's in the pinned nixpkgs
+3. **`true` or `"*"` means latest** — whatever's in the pinned nixpkgs
 
 ### Format
 
@@ -317,11 +322,15 @@ include = ["baseline"]    # Options: "baseline", "complete", or []
 
 # Project-specific tools
 [tools]
-python = "3.11"           # Specific version
+rust = "stable"           # Via rust-overlay: "stable", "beta", "nightly", "1.75.0"
+python = "3.12"           # Nix interpreter; use uv for package management
 nodejs = "20"
-rust = "stable"           # Special: uses rustup
 go = "1.22"
-pulumi = "*"              # Latest
+uv = true                 # Fast Python package manager
+pulumi = true             # Latest in nixpkgs
+
+# Rust components (only when rust is specified)
+rust-components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
 ```
 
 ### What Does NOT Go Here
@@ -355,7 +364,7 @@ Seriously, this is just magical. Use it.
 
 ## Extending the Version Map
 
-Most tools use `"*"` and map directly to their nixpkgs name. For tools with version-specific naming (python, nodejs, go), the `flake.nix` has a `versionMap`:
+Most tools use `true` and map directly to their nixpkgs name. For tools with version-specific naming (python, nodejs, go), the `flake.nix` has a `versionMap`:
 
 ```nix
 versionMap = {
@@ -369,6 +378,8 @@ versionMap = {
   };
 };
 ```
+
+**Rust** is handled specially via [rust-overlay](https://github.com/oxalica/rust-overlay), supporting channels (`stable`, `beta`, `nightly`) and specific versions (`1.75.0`). Components like `rustfmt`, `clippy`, and `rust-src` are configured via `rust-components`.
 
 To add a new version mapping, edit `flake.nix` or ask an AI agent to help.
 
@@ -389,6 +400,7 @@ Linux builds automatically include `libstdc++` for Python native extensions (grp
 ## References
 
 - [Nix Flakes](https://nixos.wiki/wiki/Flakes)
+- [rust-overlay](https://github.com/oxalica/rust-overlay) — Rust toolchain management for Nix
 - [nix-direnv](https://github.com/nix-community/nix-direnv)
 - [Pulumi ESC](https://www.pulumi.com/docs/esc/)
 - [Modern Unix Tools](https://github.com/ibraheemdev/modern-unix)

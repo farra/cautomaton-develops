@@ -9,5 +9,12 @@
 
 # Project-specific tools (in addition to bundles)
 [tools]
-# python = "3.11"
+# rust = "stable"       # "stable", "beta", "nightly", or specific: "1.75.0"
+# python = "3.12"       # Nix provides interpreter; use uv for packages
 # nodejs = "20"
+# go = "1.22"
+# uv = true             # Fast Python package manager
+
+# Rust components (only used when rust is specified above)
+# Default: ["rustfmt", "clippy"]
+# rust-components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
