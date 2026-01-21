@@ -15,6 +15,6 @@
 # go = "1.22"
 # uv = true             # Fast Python package manager
 
-# Rust components (only used when rust is specified above)
-# Default: ["rustfmt", "clippy"]
-# rust-components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
+# Rust toolchain configuration (only used when rust is in [tools])
+# [rust]
+# components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]

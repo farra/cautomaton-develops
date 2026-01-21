@@ -81,7 +81,7 @@
 
     getRustToolchain = pkgs: let
       version = deps.tools.rust or null;
-      components = deps.rust-components or [ "rustfmt" "clippy" ];
+      components = deps.rust.components or [ "rustfmt" "clippy" ];
 
       # Parse version string to rust-bin path
       toolchain =

@@ -109,8 +109,9 @@ nodejs = "20"
 uv = true                 # Fast Python package manager
 mytool = true             # Latest in nixpkgs
 
-# Rust components (default: rustfmt, clippy)
-rust-components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
+# Rust toolchain config (optional, default: rustfmt + clippy)
+[rust]
+components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
 ```
 
 Then re-enter the shell: `exit` and `nix develop` (or `direnv reload` if using direnv).
@@ -329,8 +330,9 @@ go = "1.22"
 uv = true                 # Fast Python package manager
 pulumi = true             # Latest in nixpkgs
 
-# Rust components (only when rust is specified)
-rust-components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
+# Rust toolchain config (optional)
+[rust]
+components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
 ```
 
 ### What Does NOT Go Here
