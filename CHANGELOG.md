@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Charm Bracelet tools to complete bundle (61 tools total):
+  - [gum](https://github.com/charmbracelet/gum) — shell script UI components
+  - [vhs](https://github.com/charmbracelet/vhs) — terminal GIF recorder
+  - [freeze](https://github.com/charmbracelet/freeze) — terminal screenshots
 - Rust toolchain support via [rust-overlay](https://github.com/oxalica/rust-overlay)
   - Supports channels: `stable`, `beta`, `nightly`
   - Supports specific versions: `rust = "1.75.0"`

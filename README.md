@@ -130,7 +130,7 @@ include = ["baseline"]   # or ["complete"] or []
 | Bundle     | Tools | Description                                     |
 |------------|-------|-------------------------------------------------|
 | `baseline` | 28    | Standalone CLI tools — no Python/Perl runtimes  |
-| `complete` | 58    | Comprehensive dev environment (baseline + more) |
+| `complete` | 61    | Comprehensive dev environment (baseline + more) |
 
 Explicit tools in `[tools]` always take precedence over bundle tools in PATH.
 
@@ -147,7 +147,7 @@ Lightweight, standalone binaries (Rust/Go/C). No heavy language runtimes.
 | **Shell** | [atuin](https://github.com/atuinsh/atuin), [direnv](https://github.com/direnv/direnv), [just](https://github.com/casey/just) |
 | **Utilities** | [tealdeer](https://github.com/dbrgn/tealdeer), [curlie](https://github.com/rs/curlie), [glow](https://github.com/charmbracelet/glow), [entr](https://github.com/eradman/entr), [pv](https://linux.die.net/man/1/pv) |
 
-### complete (58 tools)
+### complete (61 tools)
 
 Everything in baseline, plus tools that may pull in language runtimes:
 
@@ -156,12 +156,13 @@ Everything in baseline, plus tools that may pull in language runtimes:
 | **Core Replacements** | [procs](https://github.com/dalance/procs), [choose](https://github.com/theryangeary/choose) |
 | **Git & GitHub** | [gh](https://github.com/cli/cli), [git-extras](https://github.com/tj/git-extras), [tig](https://github.com/jonas/tig) |
 | **Data Processing** | [fx](https://github.com/antonmedv/fx) |
-| **Shell** | [shellcheck](https://github.com/koalaman/shellcheck), [starship](https://github.com/starship/starship) |
+| **Shell** | [shellcheck](https://github.com/koalaman/shellcheck), [starship](https://github.com/starship/starship), [gum](https://github.com/charmbracelet/gum) |
 | **File Operations** | [rsync](https://rsync.samba.org/), [trash-cli](https://github.com/andreafrancia/trash-cli), [watchexec](https://github.com/watchexec/watchexec), [renameutils](https://www.nongnu.org/renameutils/) |
 | **Networking** | [curl](https://curl.se/), [wget](https://www.gnu.org/software/wget/), [httpie](https://github.com/httpie/httpie) |
 | **Archives** | [unzip](https://linux.die.net/man/1/unzip), [p7zip](https://github.com/p7zip-project/p7zip), [zstd](https://github.com/facebook/zstd) |
 | **System** | [tmux](https://github.com/tmux/tmux), [watch](https://linux.die.net/man/1/watch), [less](https://www.greenwoodsoftware.com/less/), [file](https://linux.die.net/man/1/file), [lsof](https://linux.die.net/man/8/lsof), [moreutils](https://joeyh.name/code/moreutils/) |
 | **Development** | [hyperfine](https://github.com/sharkdp/hyperfine), [tokei](https://github.com/XAMPPRocky/tokei), [navi](https://github.com/denisidoro/navi) |
+| **Terminal Recording** | [vhs](https://github.com/charmbracelet/vhs), [freeze](https://github.com/charmbracelet/freeze) |
 | **Clipboard** | [xclip](https://github.com/astrand/xclip), [wl-clipboard](https://github.com/bugaevc/wl-clipboard) |
 | **Logs** | [lnav](https://github.com/tstack/lnav) |
 

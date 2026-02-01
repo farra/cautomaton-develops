@@ -37,7 +37,7 @@
       "tealdeer" "curlie" "glow" "entr" "pv"
     ];
 
-    # complete: Comprehensive dev environment (58 tools)
+    # complete: Comprehensive dev environment (61 tools)
     # Everything in baseline plus additional tools for a fully-equipped shell
     completeTools = baselineTools ++ [
       # Additional core replacements
@@ -47,7 +47,7 @@
       # Data processing
       "fx"
       # Shell enhancement
-      "shellcheck" "starship"
+      "shellcheck" "starship" "gum"
       # File operations
       "rsync" "trash-cli" "watchexec" "renameutils"
       # Networking
@@ -58,6 +58,8 @@
       "tmux" "watch" "less" "file" "lsof" "moreutils"
       # Development utilities
       "hyperfine" "tokei" "navi"
+      # Terminal recording & screenshots
+      "vhs" "freeze"
       # Clipboard
       "xclip" "wl-clipboard"
       # Logs
