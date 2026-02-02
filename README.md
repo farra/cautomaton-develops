@@ -2,7 +2,7 @@
 
 A project template for reproducible development environments using Nix flakes.
 
-This template is an opinionated thin layer. Very thin. You don't need this. Just have Claude or Codex write it for you.
+This template is an opinionated thin layer. Very thin. You don't need this. Just have Claude or Codex write it for you. Better yet, use [devshell](https://github.com/numtide/devshell), [devenv](https://devenv.sh/), or [devbox](https://www.jetify.com/devbox). 
 
 What is it?
 
@@ -257,6 +257,8 @@ AI coding agents can:
 - Help maintain `flake.nix` when complex changes are needed
 - Add new tools or update version mappings
 
+Also, see [agentboxes](https://github.com/farra/agentboxes) for my approach to testing and managing coding agents and agent orchestrators.
+
 ---
 
 ## Project Structure
@@ -473,6 +475,8 @@ The two projects complement each other and can be overlaid on the same project:
 curl -sL https://raw.githubusercontent.com/farra/cautomaton-develops/main/init.sh | bash
 bash <(curl -sL https://raw.githubusercontent.com/farra/dev-agent-backlog/main/bin/init.sh) MYPREFIX .
 ```
+
+See [agentboxes](https://github.com/farra/agentboxes) for my approach to managing coding agents and agent orchestrators that is similar to this project.
 
 ---
 
