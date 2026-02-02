@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- [NUR](https://github.com/nix-community/NUR) (Nix User Repository) integration
+  - Add `[nur] include = ["mic92/hello-nur"]` to deps.toml
+  - Access community packages not in nixpkgs
 - [llm-agents.nix](https://github.com/numtide/llm-agents.nix) integration for AI coding agents
   - Add `[llm-agents] include = ["claude-code", "codex"]` to deps.toml
   - 60+ agents available: claude-code, codex, gemini-cli, amp, goose-cli, etc.
@@ -24,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `flake.nix` now includes NUR as an input
 - `flake.nix` now includes llm-agents.nix as an input
 - `flake.nix` now includes rust-overlay as an input
 - Updated deps.toml template with Rust examples

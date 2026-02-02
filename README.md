@@ -197,6 +197,23 @@ See [llm-agents.nix README](https://github.com/numtide/llm-agents.nix) for the f
 
 ---
 
+## NUR (Nix User Repository)
+
+Access community packages from [NUR](https://github.com/nix-community/NUR) — user-contributed packages not in nixpkgs.
+
+```toml
+[nur]
+include = ["mic92/hello-nur", "rycee/firefox-addons"]
+```
+
+Format: `"repoOwner/packageName"` → maps to `nur.repos.repoOwner.packageName`
+
+Browse available repos at [nur.nix-community.org](https://nur.nix-community.org/) or in [repos.json](https://github.com/nix-community/NUR/blob/main/repos.json).
+
+> **Note**: NUR packages are community-maintained and not reviewed by Nixpkgs. Review expressions before installing.
+
+---
+
 ## Design Philosophy
 
 ### Minimal Substrate, Maximum Isolation

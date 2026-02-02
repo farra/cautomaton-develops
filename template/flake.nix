@@ -7,9 +7,11 @@
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
     llm-agents.url = "github:numtide/llm-agents.nix";
     llm-agents.inputs.nixpkgs.follows = "nixpkgs";
+    nur.url = "github:nix-community/NUR";
+    nur.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, rust-overlay, llm-agents }: let
+  outputs = { self, nixpkgs, rust-overlay, llm-agents, nur }: let
     supportedSystems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
@@ -146,10 +148,8 @@
     # =========================================================================
     # External Flake Integrations
     # =========================================================================
-    # Pre-integrated flakes for specialized tooling.
-    # See: https://github.com/numtide/llm-agents.nix
 
-    # Get llm-agents packages for a system
+    # LLM Agents: https://github.com/numtide/llm-agents.nix
     getLlmAgentsPackages = system: let
       agentNames = deps.llm-agents.include or [];
       agentPkgs = llm-agents.packages.${system} or {};
@@ -159,6 +159,27 @@
         then agentPkgs.${name}
         else throw "Unknown llm-agents package: ${name}. See: https://github.com/numtide/llm-agents.nix"
       ) agentNames;
+
+    # NUR (Nix User Repository): https://github.com/nix-community/NUR
+    # Format: "repoOwner/packageName" -> nur.repos.repoOwner.packageName
+    getNurPackages = pkgs: let
+      nurPkgs = import nur { inherit pkgs; nurpkgs = pkgs; };
+      packageSpecs = deps.nur.include or [];
+
+      parseSpec = spec: let
+        parts = builtins.split "/" spec;
+        owner = builtins.elemAt parts 0;
+        pkg = builtins.elemAt parts 2;
+        repo = nurPkgs.repos.${owner} or null;
+      in
+        if repo == null then
+          throw "Unknown NUR repo: ${owner}. See: https://github.com/nix-community/NUR"
+        else if !(builtins.hasAttr pkg repo) then
+          throw "Unknown NUR package: ${spec}. Check https://github.com/nix-community/NUR"
+        else
+          repo.${pkg};
+    in
+      map parseSpec packageSpecs;
 
   in {
     devShells = forAllSystems (system: let
@@ -192,6 +213,9 @@
       # LLM agents from numtide/llm-agents.nix
       llmAgentsPackages = getLlmAgentsPackages system;
 
+      # NUR packages from nix-community/NUR
+      nurPackages = getNurPackages pkgs;
+
       # Platform-specific: Linux needs libstdc++ for Python native extensions
       linuxDeps = pkgs.lib.optionals pkgs.stdenv.isLinux [
         pkgs.stdenv.cc.cc.lib
@@ -200,7 +224,7 @@
     in {
       default = pkgs.mkShell {
         # Explicit tools first so they take precedence in PATH
-        packages = explicitTools ++ rustPackages ++ llmAgentsPackages ++ bundlePackages ++ linuxDeps;
+        packages = explicitTools ++ rustPackages ++ llmAgentsPackages ++ nurPackages ++ bundlePackages ++ linuxDeps;
 
         # Linux: ensure native extensions can find libstdc++
         LD_LIBRARY_PATH = pkgs.lib.optionalString pkgs.stdenv.isLinux
@@ -208,11 +232,13 @@
 
         shellHook = let
           llmAgentNames = deps.llm-agents.include or [];
+          nurNames = deps.nur.include or [];
         in ''
           echo "Dev environment loaded."
           ${if rustToolchain != null then ''echo "Rust: $(rustc --version)"'' else ""}
           ${if includedBundles != [] then ''echo "Bundles: ${builtins.concatStringsSep ", " includedBundles}"'' else ""}
           ${if llmAgentNames != [] then ''echo "LLM Agents: ${builtins.concatStringsSep ", " llmAgentNames}"'' else ""}
+          ${if nurNames != [] then ''echo "NUR: ${builtins.concatStringsSep ", " nurNames}"'' else ""}
         '';
       };
     });
