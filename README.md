@@ -116,6 +116,10 @@ components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
 # AI coding agents (optional)
 [llm-agents]
 include = ["claude-code"]
+
+# Community packages from NUR (optional)
+# [nur]
+# include = ["owner/package"]
 ```
 
 Then re-enter the shell: `exit` and `nix develop` (or `direnv reload` if using direnv).
