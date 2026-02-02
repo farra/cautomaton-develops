@@ -5,9 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    llm-agents.url = "github:numtide/llm-agents.nix";
+    llm-agents.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, rust-overlay }: let
+  outputs = { self, nixpkgs, rust-overlay, llm-agents }: let
     supportedSystems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
@@ -141,6 +143,23 @@
     # Resolve a tool name to a package (for bundles, always use latest)
     resolveTool = pkgs: name: mapTool pkgs name "*";
 
+    # =========================================================================
+    # External Flake Integrations
+    # =========================================================================
+    # Pre-integrated flakes for specialized tooling.
+    # See: https://github.com/numtide/llm-agents.nix
+
+    # Get llm-agents packages for a system
+    getLlmAgentsPackages = system: let
+      agentNames = deps.llm-agents.include or [];
+      agentPkgs = llm-agents.packages.${system} or {};
+    in
+      map (name:
+        if builtins.hasAttr name agentPkgs
+        then agentPkgs.${name}
+        else throw "Unknown llm-agents package: ${name}. See: https://github.com/numtide/llm-agents.nix"
+      ) agentNames;
+
   in {
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs {
@@ -170,6 +189,9 @@
       rustToolchain = getRustToolchain pkgs;
       rustPackages = if rustToolchain != null then [ rustToolchain ] else [];
 
+      # LLM agents from numtide/llm-agents.nix
+      llmAgentsPackages = getLlmAgentsPackages system;
+
       # Platform-specific: Linux needs libstdc++ for Python native extensions
       linuxDeps = pkgs.lib.optionals pkgs.stdenv.isLinux [
         pkgs.stdenv.cc.cc.lib
@@ -178,16 +200,19 @@
     in {
       default = pkgs.mkShell {
         # Explicit tools first so they take precedence in PATH
-        packages = explicitTools ++ rustPackages ++ bundlePackages ++ linuxDeps;
+        packages = explicitTools ++ rustPackages ++ llmAgentsPackages ++ bundlePackages ++ linuxDeps;
 
         # Linux: ensure native extensions can find libstdc++
         LD_LIBRARY_PATH = pkgs.lib.optionalString pkgs.stdenv.isLinux
           "${pkgs.stdenv.cc.cc.lib}/lib";
 
-        shellHook = ''
+        shellHook = let
+          llmAgentNames = deps.llm-agents.include or [];
+        in ''
           echo "Dev environment loaded."
           ${if rustToolchain != null then ''echo "Rust: $(rustc --version)"'' else ""}
           ${if includedBundles != [] then ''echo "Bundles: ${builtins.concatStringsSep ", " includedBundles}"'' else ""}
+          ${if llmAgentNames != [] then ''echo "LLM Agents: ${builtins.concatStringsSep ", " llmAgentNames}"'' else ""}
         '';
       };
     });

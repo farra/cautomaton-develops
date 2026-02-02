@@ -112,6 +112,10 @@ mytool = true             # Latest in nixpkgs
 # Rust toolchain config (optional, default: rustfmt + clippy)
 [rust]
 components = ["rustfmt", "clippy", "rust-src", "rust-analyzer"]
+
+# AI coding agents (optional)
+[llm-agents]
+include = ["claude-code"]
 ```
 
 Then re-enter the shell: `exit` and `nix develop` (or `direnv reload` if using direnv).
@@ -165,6 +169,31 @@ Everything in baseline, plus tools that may pull in language runtimes:
 | **Terminal Recording** | [vhs](https://github.com/charmbracelet/vhs), [freeze](https://github.com/charmbracelet/freeze) |
 | **Clipboard** | [xclip](https://github.com/astrand/xclip), [wl-clipboard](https://github.com/bugaevc/wl-clipboard) |
 | **Logs** | [lnav](https://github.com/tstack/lnav) |
+
+---
+
+## LLM Agents
+
+Pre-integrated support for AI coding agents via [numtide/llm-agents.nix](https://github.com/numtide/llm-agents.nix) (auto-updated daily).
+
+```toml
+[llm-agents]
+include = ["claude-code", "codex", "gemini-cli"]
+```
+
+Available agents include:
+
+| Agent | Description |
+|-------|-------------|
+| `claude-code` | Anthropic's agentic coding CLI |
+| `codex` | OpenAI Codex CLI |
+| `gemini-cli` | Google's Gemini CLI |
+| `amp` | Sourcegraph's Amp agent |
+| `copilot-cli` | GitHub Copilot CLI |
+| `goose-cli` | Block's Goose agent |
+| `crush` | Charm's terminal coding agent |
+
+See [llm-agents.nix README](https://github.com/numtide/llm-agents.nix) for the full list of 60+ available packages.
 
 ---
 

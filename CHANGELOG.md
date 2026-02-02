@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- [llm-agents.nix](https://github.com/numtide/llm-agents.nix) integration for AI coding agents
+  - Add `[llm-agents] include = ["claude-code", "codex"]` to deps.toml
+  - 60+ agents available: claude-code, codex, gemini-cli, amp, goose-cli, etc.
+  - Packages auto-updated daily by numtide
 - Charm Bracelet tools to complete bundle (61 tools total):
   - [gum](https://github.com/charmbracelet/gum) — shell script UI components
   - [vhs](https://github.com/charmbracelet/vhs) — terminal GIF recorder
@@ -20,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `flake.nix` now includes llm-agents.nix as an input
 - `flake.nix` now includes rust-overlay as an input
 - Updated deps.toml template with Rust examples
 - Updated README with Rust documentation
