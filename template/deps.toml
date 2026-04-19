@@ -2,8 +2,11 @@
 # Project tool dependencies
 
 # Include pre-defined tool bundles:
-#   "baseline" - Standalone modern CLI tools (28 tools, no Python/Perl)
-#   "complete" - Comprehensive dev environment (58 tools)
+#   "baseline" - Standalone modern CLI tools (25 tools, no Python/Perl)
+#   "complete" - Comprehensive dev environment (56 tools)
+# Note: user-level shell tools (atuin, zoxide, direnv, starship, tmux) are
+# intentionally excluded — they belong in the user's machine substrate, not
+# per-project flakes. See baselineTools in flake.nix for rationale.
 [bundles]
 # include = ["baseline"]
 

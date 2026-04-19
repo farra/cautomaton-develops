@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Removed
+
+- User-level shell tools dropped from `baseline` and `complete` bundles —
+  they belong in the user's machine substrate, not per-project flakes:
+  - `atuin` — shared `~/.local/share/atuin/history.db` with schema
+    migrations; project-flake pins can lag user state and fail with
+    "migration was previously applied but is missing in the resolved
+    migrations" once a newer atuin has migrated the DB elsewhere.
+  - `zoxide` — shared `~/.local/share/zoxide/db.zo` cd-history; same
+    version-drift failure mode as atuin.
+  - `direnv` — shell-integration tool that *activates* project flakes;
+    including it inside a project flake is circular. User-level by
+    definition.
+  - `starship` — shell prompt; must be consistent across every shell.
+    Config is user-global (`~/.config/starship.toml`).
+  - `tmux` — user terminal multiplexer; sessions and `~/.tmux.conf`
+    span all projects.
+- Bundle sizes: `baseline` 28 → 25 tools, `complete` 61 → 56 tools.
+
 ### Added
 
 - [NUR](https://github.com/nix-community/NUR) (Nix User Repository) integration

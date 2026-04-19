@@ -24,25 +24,32 @@
     # These are pre-defined collections of commonly useful tools.
     # Include them via deps.toml: [bundles] include = ["baseline"]
 
-    # baseline: Modern terminal essentials (28 tools)
-    # A curated set of standalone CLI tools (no Python/Perl/Ruby runtimes)
+    # baseline: Modern terminal essentials (25 tools)
+    # A curated set of standalone CLI tools (no Python/Perl/Ruby runtimes).
+    # User-level shell tools with shared state or cross-shell integration
+    # (atuin, zoxide, direnv, starship, tmux) are intentionally omitted — they
+    # belong in the user's machine substrate (e.g. the homebase container),
+    # not per-project flakes. Project-scoped nixpkgs pins can drift behind
+    # user state; notably atuin's shared history DB migrations broke older
+    # baked versions when a newer atuin had migrated the schema.
     baselineTools = [
       # Core replacements
       "ripgrep" "fd" "bat" "eza" "sd" "dust" "duf" "bottom" "difftastic"
       # Navigation & search
-      "zoxide" "fzf" "broot" "tree"
+      "fzf" "broot" "tree"
       # Git
       "delta" "lazygit"
       # Data processing
       "jq" "yq-go" "csvtk" "htmlq" "miller"
       # Shell enhancement
-      "atuin" "direnv" "just"
+      "just"
       # Utilities
       "tealdeer" "curlie" "glow" "entr" "pv"
     ];
 
-    # complete: Comprehensive dev environment (61 tools)
-    # Everything in baseline plus additional tools for a fully-equipped shell
+    # complete: Comprehensive dev environment (56 tools)
+    # Everything in baseline plus additional tools for a fully-equipped shell.
+    # See baselineTools comment for omitted user-level tools.
     completeTools = baselineTools ++ [
       # Additional core replacements
       "procs" "choose"
@@ -51,7 +58,7 @@
       # Data processing
       "fx"
       # Shell enhancement
-      "shellcheck" "starship" "gum"
+      "shellcheck" "gum"
       # File operations
       "rsync" "trash-cli" "watchexec" "renameutils"
       # Networking
@@ -59,7 +66,7 @@
       # Archives
       "unzip" "p7zip" "zstd"
       # System utilities
-      "tmux" "watch" "less" "file" "lsof" "moreutils"
+      "watch" "less" "file" "lsof" "moreutils"
       # Development utilities
       "hyperfine" "tokei" "navi"
       # Terminal recording & screenshots
